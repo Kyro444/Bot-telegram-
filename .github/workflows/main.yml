@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      backend:
+        image: node:12
+        ports:
+          - 3000:3000
+        options: --health-cmd "curl --fail http://localhost:3000 || exit 1" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+
+    - name: Install frontend dependencies
+      working-directory: src
+      run: npm install
+
+    - name: Install backend dependencies
+      working-directory: backend
+      run: npm install
+
+    - name: Run frontend tests
+      working-directory: src
+      run: npm test
+
+    - name: Run backend tests
+      working-directory: backend
+      run: npm tes
